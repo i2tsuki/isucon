@@ -1,0 +1,6 @@
+#!/bin/bash
+
+. ${HOME}/isu.conf
+
+for i in ${ISUS[@]}; do echo $i; ssh -t $i 'sudo systemctl stop nginx; sudo systemctl stop isu-go; sudo systemctl stop mysql; sudo systemctl stop react'; done
+for i in ${ISUS[@]}; do echo $i; ssh -t $i 'sudo systemctl start react; sudo systemctl start mysql; sudo systemctl start isu-go; sudo systemctl start nginx;'; done

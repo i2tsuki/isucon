@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+. ${HOME}/isu.conf
+
+echo -n ${ISUS[@]} | xargs -d' ' -P${#ISUS[@]} -I {} ssh -qt {} 'sudo journalctl -f -u mysql'

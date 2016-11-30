@@ -1,0 +1,5 @@
+#!/bin/bash
+
+. ${HOME}/isu.conf
+
+for i in ${ISUS[@]}; do echo $i; ssh -t $i 'sudo systemctl restart nginx'; done
