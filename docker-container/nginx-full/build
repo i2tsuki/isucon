@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+# Change Working Directory
+cd "$(dirname $(readlink -f $0))"
+
+# Build container
+docker build -t isucon/nginx-full .
+
+cd ${OLDPWD}
