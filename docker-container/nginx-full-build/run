@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+docker run -ti --rm \
+       --name isucon-nginx-full-build \
+       --net=host \
+       -v $(readlink -f ./rootfs/etc/nginx/nginx.conf):/etc/nginx/nginx.conf \
+       --privileged=true \
+       isucon/nginx-full-build
