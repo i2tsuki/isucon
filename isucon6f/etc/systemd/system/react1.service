@@ -1,0 +1,14 @@
+[Unit]
+Description=react
+
+[Service]
+Type=simple
+ExecStart=/home/isucon/node-v6.9.1-linux-x64/bin/node /home/isucon/webapp/react/build/server.js
+Restart=always
+User=root
+Group=root
+WorkingDirectory=/home/isucon
+Environment="ISUCON_ENV=production" "NODE_ENV=production" "PORT=443" "API=http://127.0.0.1:8080" "SSL_KEY=/home/isucon/webapp/ssl/oreore.key" "SSL_CERT=/home/isucon/webapp/ssl/oreore.crt" /home/isucon/node-v6.9.1-linux-x64/bin/node /home/isucon/webapp/react/build/server.js
+
+[Install]
+WantedBy=multi-user.target

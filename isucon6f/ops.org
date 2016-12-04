@@ -1,0 +1,83 @@
+* aws
+aws --region "ap-northeast-1" ec2 run-instances \
+    --image-id "ami-0567c164" \
+    --key-name "ono-ka" \
+    --security-group-ids "sg-bd1e43d9" \
+    --instance-type "c4.large" \
+    --monitoring Enabled=false \
+    --subnet-id "subnet-1537f363" \
+    --private-ip-address "10.0.1.4" \
+    --iam-instance-profile Name=xxxxx-ci-web \
+    --count 1 \
+    --associate-public-ip-address
+# AWS で作成 try!
+
+* local
+- server
+#+BEGIN_SRC sh
+IPISUS="127.0.0.1"
+alias FORIPISUS='for i in ${IPISUS[@]}; do'
+FORIPISUS echo $i; ssh $i 'sudo apt-get -yq update'; done
+FORIPISUS echo $i; ssh -t $i 'sudo apt-get -yqq install -f lv tmux strace sysstat dstat dnsutils iproute vim curl jq nodejs tcpdump git rsync mysql-client-core-5.7'; done
+
+tmux new -s kizkoh
+sudo su
+systemctl list-units | lv
+systemctl stop isu.service
+systemctl disable isu.service
+systemctl stop docker.service
+systemctl disable docker.service
+#+END_SRC
+
+- local
+#+BEGIN_SRC sh
+rsync -aviK ./isucon6f/etc/systemd/system isucon6f-isu01:~/
+#+END_SRC
+
+- server
+#+BEGIN_SRC sh
+chown -Rv root:root /home/isucon/system
+rsync -n -aviK /home/isucon/system/ /etc/systemd/system/
+rsync -aviK /home/isucon/system/ /etc/systemd/system/
+rm -rfv /home/isucon/system
+systemctl daemon-reload
+#+END_SRC
+
+- local
+#+BEGIN_SRC sh
+ln -sfnv /home/kinoo/repo/fork/isucon6-final/webapp/go/vendor src
+GOPATH=/home/kinoo/repo/fork/isucon6-final/webapp/go go build -o webapp
+rsync -aviK ./webapp isucon6f-isu01:~/webapp/go/webapp
+#+END_SRC
+
+- server
+#+BEGIN_SRC sh
+apt-get -yqq install mysql-server-5.7
+# root password is empty
+systemctl status mysql.service
+mysql -uroot < /home/isucon/webapp/sql/00_create_database.sql
+mysql -uroot < /home/isucon/webapp/sql/01_max_allowed_packet.sql
+mysql -uroot < /home/isucon/webapp/sql/01_schema.sql
+gunzip -c /home/isucon/webapp/sql/02_initial_data.sql.gz | mysql -u root
+mysql -uroot -e 'SHOW DATABASES;'
+mysql -uroot -e 'SHOW TABLES;' isuketch
+
+# Change log: https://github.com/kizkoh/isucon6-final/commit/ff4e583cf1488ccb707ddece7fd0e626badf5fa4
+systemctl start isu-go.service
+systemctl status isu-go.service
+
+cd /home/isucon
+curl -LO https://nodejs.org/dist/v6.9.1/node-v6.9.1-linux-x64.tar.xz
+tar xvf node-v6.9.1-linux-x64.tar.xz
+/home/isucon/node-v6.9.1-linux-x64/bin/node -v
+
+su isucon
+PATH=/home/isucon/node-v6.9.1-linux-x64/bin:${PATH}
+cd /home/isucon/webapp/react
+npm install
+NODE_ENV=production npm run build
+sudo su
+
+systemctl start react1.service
+systemctl status react1.service
+#+END_SRC

@@ -1,0 +1,14 @@
+[Unit]
+Description=isu-go
+
+[Service]
+Type=simple
+ExecStart=/home/isucon/webapp/go/webapp
+Restart=always
+User=isucon
+Group=isucon
+WorkingDirectory=/home/isucon
+Environment="MYSQL_HOST=127.0.0.1" "MYSQL_PORT=3306" "MYSQL_USER=isucon" "MYSQL_PASS=isucon"
+
+[Install]
+WantedBy=multi-user.target
