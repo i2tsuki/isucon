@@ -137,3 +137,23 @@ nginx -t -c /etc/nginx/nginx.conf
 systemctl start nginx.service
 systemctl status nginx.service
 #+END_SRC
+
+#+BEGIN_SRC sh
+systemctl restart nginx.service
+systemctl status nginx.service
+#+END_SRC
+
+
+#+BEGIN_SRC sh
+# make gzip
+su isucon
+cd /home/isucon/webapp/react/public/
+cp -pv ./bundle.js ./bundle.js.bak
+gzip -c -7 ./bundle.js > ./bundle.js.gz
+cp -pv ./favicon.ico ./favicon.ico.bak
+gzip -c -7 ./favicon.ico.gz > ./favicon.ico.gz
+cp -pv ./css/rc-color-picker.css ./css/rc-color-picker.css.bak
+gzip -c -7 ./css/rc-color-picker.css  > ./css/rc-color-picker.css.gz
+cp -pv ./css/sanitize.css ./css/sanitize.css.bak
+gzip -c -7 ./css/sanitize.css  > ./css/sanitize.css.gz
+#+END_SRC
