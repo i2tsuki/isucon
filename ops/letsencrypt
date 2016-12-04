@@ -1,0 +1,35 @@
+#!/bin/sh
+curl https://dl.eff.org/certbot-auto -O
+chmod +x ./certbot-auto
+./certbot-auto certonly --debug
+
+./certbot-auto --nginx --register-unsafely-without-email --domains hoge.isucon.net --agree-tos
+# 自動的に設定される
+
+ls -la /usr/klab/etc/ssl/csr/req_conf/klab
+
+# オレオレ証明書
+DOMAIN="*.isucon.net"
+DOMAIN="isucon.v4.klaws.klab.org"
+BASE="$(echo ${DOMAIN} | sed -e 's/\*/wild/')"
+CSRDIR="/etc/ssl/csr"
+mkdir -pv ${CSRDIR}
+
+cat <<EOF | openssl req -new -config /dev/stdin -keyout /etc/ssl/private/${BASE}-private.pem -out ${CSRDIR}/${BASE}-csr.pem
+[ req ] 
+default_bits = 2048
+prompt = no
+encrypt_key = no
+default_md = sha256
+distinguished_name = req_distinguished_name 
+
+[ req_distinguished_name ]
+C               = JP
+ST              = Tokyo
+L               = Minato-Ku
+O               = Isu Inc.
+CN              = ${DOMAIN}
+EOF
+openssl x509 -days 3650 -req -signkey /etc/ssl/private/${BASE}-private.pem < ${CSRDIR}/${BASE}-csr.pem > /etc/ssl/certs/${BASE}.crt
+
+echo "/etc/ssl/certs/${BASE}.crt"
