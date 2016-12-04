@@ -159,3 +159,8 @@ gzip -c -7 ./css/rc-color-picker.css  > ./css/rc-color-picker.css.gz
 cp -pv ./css/sanitize.css ./css/sanitize.css.bak
 gzip -c -7 ./css/sanitize.css  > ./css/sanitize.css.gz
 #+END_SRC
+
+- local
+#+BEGIN_SRC sh
+rsync -avRiK webapp/rust/release/webapp isucon6f-isu01:~/
+#+END_SRC
