@@ -81,3 +81,44 @@ sudo su
 systemctl start react1.service
 systemctl status react1.service
 #+END_SRC
+
+- server
+#+BEGIN_SRC sh
+systemctl stop nginx.service
+systemctl status nginx.service
+systemctl stop react1.service
+systemctl status react1.service
+apt-get -yqq install nginx-full
+#+END_SRC
+
+- local
+#+BEGIN_SRC sh
+rsync -aviK ./webapp/react/server.jsx isucon6f-isu01:~/webapp/react/server.jsx
+#+END_SRC
+
+- server
+#+BEGIN_SRC sh
+Change log: https://github.com/kizkoh/isucon6-final/commit/fb345c391d5a35e63a3a5e3eaad3f1e485af40ba
+su isucon
+PATH=/home/isucon/node-v6.9.1-linux-x64/bin:${PATH}
+cd /home/isucon/webapp/react
+NODE_ENV=production npm run build
+sudo su
+#+END_SRC
+
+- local
+#+BEGIN_SRC sh
+rsync -aviK ./isucon6f/etc/systemd/system isucon6f-isu01:~/
+#+END_SRC
+
+- server
+#+BEGIN_SRC sh
+chown -Rv root:root /home/isucon/system
+rsync -n -aviK /home/isucon/system/ /etc/systemd/system/
+rsync -aviK /home/isucon/system/ /etc/systemd/system/
+rm -rfv /home/isucon/system
+systemctl daemon-reload
+
+systemctl start react1.service
+systemctl status react1.service
+#+END_SRC
