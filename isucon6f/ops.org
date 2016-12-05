@@ -145,7 +145,6 @@ systemctl restart nginx.service
 systemctl status nginx.service
 #+END_SRC
 
-
 #+BEGIN_SRC sh
 # make gzip
 su isucon
@@ -162,5 +161,20 @@ gzip -c -7 ./css/sanitize.css  > ./css/sanitize.css.gz
 
 - local
 #+BEGIN_SRC sh
-rsync -avRiK webapp/rust/release/webapp isucon6f-isu01:~/
+rsync -aviK webapp/rust/target/release/webapp isucon6f-isu01:~/rust/webapp
+# or
+# rsync -aviK target/release/webapp isucon6f-isu01:~/rust/webapp
+
+rsync -aviK ./isucon6f/etc/nginx/nginx.conf isucon6f-isu01:~/
+ISUCON_ENV=prodution MYSQL_HOST=localhost MYSQL_PORT=3306 MYSQL_USER=isucon MYSQL_PASS=isucon /home/isucon/rust/webapp
+#+END_SRC
+
+- server
+#+BEGIN_SRC sh
+chown -v root:root /home/isucon/nginx.conf
+rsync -aviK /home/isucon/nginx.conf /etc/nginx/nginx.conf
+rm -fv /home/isucon/nginx.conf
+nginx -t -c /etc/nginx/nginx.conf
+systemctl restart nginx
+systemctl status nginx
 #+END_SRC
